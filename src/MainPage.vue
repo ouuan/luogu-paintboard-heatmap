@@ -27,15 +27,18 @@ import {
 } from 'naive-ui';
 import { ref } from 'vue';
 import connectWs from './connectWs';
-import { HEIGHT, INTERVAL, WIDTH } from './constants';
+import {
+  HEIGHT, INTERVAL, palette, WIDTH,
+} from './constants';
 
 const canvas = ref<null|HTMLCanvasElement>(null);
 
 const cnt = Array.from(Array(WIDTH), () => Array<number>(HEIGHT).fill(0));
+const color = Array.from(Array(WIDTH), () => Array<number>(HEIGHT).fill(2));
 
-function paint(x: number, y: number) {
+function paint(x: number, y: number, col: number) {
   cnt[x][y] += 1;
-  console.log(x, y);
+  color[x][y] = col;
   setTimeout(() => {
     cnt[x][y] -= 1;
   }, INTERVAL);
@@ -50,14 +53,15 @@ function updateCanvas() {
 
   const max = Math.max(1, cnt.reduce((prev, cur) => Math.max(
     prev,
-    cur.reduce((p, c) => Math.max(p, Math.sqrt(c ? c + 1 : 0)), 0),
+    cur.reduce((p, c) => Math.max(p, Math.sqrt(c ? c + 3 : 1)), 0),
   ), 0));
 
   for (let x = 0; x < WIDTH; x += 1) {
     for (let y = 0; y < HEIGHT; y += 1) {
       const index = (x + y * WIDTH) * 4;
       for (let i = 0; i < 3; i += 1) {
-        imageData.data[index + i] = 255 * (Math.sqrt(cnt[x][y] ? cnt[x][y] + 1 : 0) / max);
+        imageData.data[index + i] = palette[color[x][y]][i]
+          * (Math.sqrt(cnt[x][y] ? cnt[x][y] + 3 : 1) / max);
       }
       imageData.data[index + 3] = 255;
     }

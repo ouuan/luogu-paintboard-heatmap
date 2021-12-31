@@ -1,6 +1,6 @@
 import { WS_TIMEOUT, WS_URL } from './constants';
 
-export default function connectWs(callback: (x: number, y: number) => void) {
+export default function connectWs(callback: (x: number, y: number, col: number) => void) {
   const ws = new WebSocket(WS_URL);
   const waitForStarted = setTimeout(() => ws.close(), WS_TIMEOUT);
 
@@ -15,8 +15,8 @@ export default function connectWs(callback: (x: number, y: number) => void) {
   ws.onmessage = ({ data }: any) => {
     const msg = JSON.parse(data);
     if (msg.type === 'paintboard_update') {
-      const { x, y } = msg;
-      callback(x, y);
+      const { x, y, color } = msg;
+      callback(x, y, color);
     }
   };
 
