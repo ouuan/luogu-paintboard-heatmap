@@ -5,14 +5,46 @@
   >
     <n-page-header title="洛谷冬日绘板热力图" />
 
-    <n-card
-      title="热力图"
-    >
+    <n-card title="计数">
+      <n-form-item label="x1">
+        <n-input-number
+          v-model:value="x1"
+          :min="0"
+          :max="WIDTH-1"
+        />
+      </n-form-item>
+      <n-form-item label="y1">
+        <n-input-number
+          v-model:value="y1"
+          :min="0"
+          :max="HEIGHT-1"
+        />
+      </n-form-item>
+      <n-form-item label="x2">
+        <n-input-number
+          v-model:value="x2"
+          :min="0"
+          :max="WIDTH-1"
+        />
+      </n-form-item>
+      <n-form-item label="y2">
+        <n-input-number
+          v-model:value="y2"
+          :min="0"
+          :max="HEIGHT-1"
+        />
+      </n-form-item>
+      <n-p>
+        计数：{{ sum }}
+      </n-p>
+    </n-card>
+
+    <n-card title="热力图">
       <n-space justify="space-around">
         <canvas
           ref="canvas"
-          width="1000"
-          height="600"
+          :width="WIDTH"
+          :height="HEIGHT"
         />
       </n-space>
     </n-card>
@@ -22,6 +54,9 @@
 <script setup lang="ts">
 import {
   NCard,
+  NFormItem,
+  NInputNumber,
+  NP,
   NPageHeader,
   NSpace,
 } from 'naive-ui';
@@ -46,7 +81,13 @@ function paint(x: number, y: number, col: number) {
 
 connectWs(paint);
 
-function updateCanvas() {
+const sum = ref(0);
+const x1 = ref(0);
+const x2 = ref(WIDTH - 1);
+const y1 = ref(0);
+const y2 = ref(HEIGHT - 1);
+
+function update() {
   const ctx = canvas.value?.getContext('2d');
   if (!ctx) return;
   const imageData = ctx.createImageData(WIDTH, HEIGHT);
@@ -67,10 +108,17 @@ function updateCanvas() {
     }
   }
 
+  sum.value = 0;
+  for (let x = Math.min(x1.value, x2.value); x <= Math.max(x1.value, x2.value); x += 1) {
+    for (let y = Math.min(y1.value, y2.value); y <= Math.max(y1.value, y2.value); y += 1) {
+      sum.value += cnt[x][y];
+    }
+  }
+
   ctx.putImageData(imageData, 0, 0);
 }
 
-setInterval(updateCanvas, 5000);
+setInterval(update, 5000);
 </script>
 
 <style scoped>
