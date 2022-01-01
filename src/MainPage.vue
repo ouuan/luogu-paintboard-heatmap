@@ -53,7 +53,7 @@ function updateCanvas() {
 
   const max = Math.max(1, cnt.reduce((prev, cur) => Math.max(
     prev,
-    cur.reduce((p, c) => Math.max(p, Math.sqrt(c ? c + 3 : 1)), 0),
+    cur.reduce((p, c) => Math.max(p, Math.log(c ? c + 4 : 2)), 0),
   ), 0));
 
   for (let x = 0; x < WIDTH; x += 1) {
@@ -61,7 +61,7 @@ function updateCanvas() {
       const index = (x + y * WIDTH) * 4;
       for (let i = 0; i < 3; i += 1) {
         imageData.data[index + i] = palette[color[x][y]][i]
-          * (Math.sqrt(cnt[x][y] ? cnt[x][y] + 3 : 1) / max);
+          * (Math.log(cnt[x][y] ? cnt[x][y] + 4 : 2) / max);
       }
       imageData.data[index + 3] = 255;
     }
