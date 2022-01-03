@@ -45,6 +45,8 @@
           ref="canvas"
           :width="WIDTH"
           :height="HEIGHT"
+          :style="canvasStyle"
+          @click="handleCanvasClick"
         />
       </n-space>
     </n-card>
@@ -119,6 +121,31 @@ function update() {
 }
 
 setInterval(update, 5000);
+
+const canvasBorderWidth = 2;
+const canvasStyle = {
+  borderStyle: 'solid',
+  borderColor: 'grey',
+  borderWidth: `${canvasBorderWidth}px`,
+};
+
+const clickChangesOne = ref(true);
+
+function handleCanvasClick(e: MouseEvent) {
+  const cv = canvas.value;
+  if (!cv) return;
+  const rect = cv.getBoundingClientRect();
+  const newX = Math.floor(e.clientX - rect.left - canvasBorderWidth);
+  const newY = Math.floor(e.clientY - rect.top - canvasBorderWidth);
+  if (clickChangesOne.value) {
+    x1.value = newX;
+    y1.value = newY;
+  } else {
+    x2.value = newX;
+    y2.value = newY;
+  }
+  clickChangesOne.value = !clickChangesOne.value;
+}
 </script>
 
 <style scoped>
@@ -126,9 +153,5 @@ setInterval(update, 5000);
   max-width: 80%;
   margin: auto;
   margin-top: 20px;
-}
-
-canvas {
-  border: 2px solid grey;
 }
 </style>
