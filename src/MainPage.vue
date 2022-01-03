@@ -35,7 +35,7 @@
         />
       </n-form-item>
       <n-p>
-        计数：{{ sum }}
+        token 计数：{{ sum.toFixed(2) }}
       </n-p>
     </n-card>
 
@@ -65,7 +65,11 @@ import {
 import { ref } from 'vue';
 import connectWs from './connectWs';
 import {
-  HEIGHT, INTERVAL, palette, WIDTH,
+  CD,
+  HEIGHT,
+  INTERVAL,
+  palette,
+  WIDTH,
 } from './constants';
 
 const canvas = ref<null|HTMLCanvasElement>(null);
@@ -82,6 +86,8 @@ function paint(x: number, y: number, col: number) {
 }
 
 connectWs(paint);
+
+const startTime = new Date().valueOf();
 
 const sum = ref(0);
 const x1 = ref(0);
@@ -116,6 +122,7 @@ function update() {
       sum.value += cnt[x][y];
     }
   }
+  sum.value *= CD / Math.min(new Date().valueOf() - startTime, INTERVAL);
 
   ctx.putImageData(imageData, 0, 0);
 }
