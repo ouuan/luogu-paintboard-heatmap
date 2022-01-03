@@ -62,7 +62,7 @@ import {
   NPageHeader,
   NSpace,
 } from 'naive-ui';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import connectWs from './connectWs';
 import {
   CD,
@@ -127,7 +127,7 @@ function update() {
   ctx.putImageData(imageData, 0, 0);
 }
 
-setInterval(update, 5000);
+setInterval(update, 1000);
 
 const canvasBorderWidth = 2;
 const canvasStyle = {
@@ -153,6 +153,28 @@ function handleCanvasClick(e: MouseEvent) {
   }
   clickChangesOne.value = !clickChangesOne.value;
 }
+
+function clamp(val: number, limit: number) {
+  if (!Number.isFinite(val)) return 0;
+  if (val < 0) return 0;
+  if (val >= limit) return limit - 1;
+  return Math.floor(val);
+}
+
+watch(x1, (val) => {
+  x1.value = clamp(val, WIDTH);
+});
+watch(x2, (val) => {
+  x2.value = clamp(val, WIDTH);
+});
+watch(y1, (val) => {
+  y1.value = clamp(val, HEIGHT);
+});
+watch(y2, (val) => {
+  y2.value = clamp(val, HEIGHT);
+});
+
+watch([x1, y1, x2, y2], () => update());
 </script>
 
 <style scoped>
